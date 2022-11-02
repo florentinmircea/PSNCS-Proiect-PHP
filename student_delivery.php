@@ -1,5 +1,5 @@
 <?php
-    /* 
+/* 
     IMPORTANT - PLEASE READ ME
         This is the ONLY file that I will use to validate your solution's implementation. Please keep in mind that only the changes done to this file
         will be tested, and if you modify anything in any other files those changes won't be taken in account when I validate your solution.
@@ -19,8 +19,8 @@
         add the student_delivery.php file modified by you (keep the name as it is) and answers.txt file where you answered the questions.
     */
 
-    /* Implement query_db_login - this function is used in login.php */
-    /* 
+/* Implement query_db_login - this function is used in login.php */
+/* 
         Description - Must query the database to obtain the username that matches the 
         input parameters ($username, $password), or must return null if there is no match.
         The password is stored as MD5, so the query must convert the password received as parameter to
@@ -32,37 +32,36 @@
             null - if user credentials are not correct
             username - if credentials match a user
     */
-    function query_db_login($username, $password) 
-    {
-        $conn = get_mysqli();
+function query_db_login($username, $password)
+{
+    $conn = get_mysqli();
 
-        $found = null;
+    $found = null;
 
-        if ($stmt = $conn->prepare('SELECT password FROM users WHERE username = ?')) {
-            // Bind parameters (s = string, i = int, b = blob, etc), in our case the username is a string so we use "s"
-            $stmt->bind_param('s', $username);
-            $stmt->execute();
-            // Store the result so we can check if the account exists in the database.
-            $stmt->store_result();
+    if ($stmt = $conn->prepare('SELECT password FROM users WHERE username = ?')) {
+        // Bind parameters s = string
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        // Store the result so we can check if the account exists in the database.
+        $stmt->store_result();
 
-            if ($stmt->num_rows > 0) {
-                $stmt->bind_result($pass);
-                $stmt->fetch();
-                // Account exists, now we verify the password.
-                // Note: remember to use password_hash in your registration file to store the hashed passwords.
-                if ( md5($password) === $pass) {
-                    // Verification success! User has logged-in!
-                    $found = $username;
-                } 
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($pass);
+            $stmt->fetch();
+            // Account exists, now we verify the password.
+            if (md5($password) === $pass) {
+                // Verification success! User has logged-in!
+                $found = $username;
             }
-            $stmt->close();
         }
-        $conn->close();
-        return $found;
+        $stmt->close();
     }
+    $conn->close();
+    return $found;
+}
 
-    /* Implement get_message_rows - this function is used in index.php */
-    /* 
+/* Implement get_message_rows - this function is used in index.php */
+/* 
         Function must query the db and fetch all the entries from the 'messages' table
         (username, message - see MUST RETURN for more details) and return them in a separate array, 
         or return an empty array if there are no entries.
@@ -73,18 +72,29 @@
                       (code will use both $results['username'] and $results['message'] to display the data)
             empty array() - if there are NO messages
     */
-    function get_message_rows() 
-    {
-        $conn = get_mysqli();
-        $results = array();
-        echo($_SESSION["cookie"]);
+function get_message_rows()
+{
+    $conn = get_mysqli();
+    $results = array();
 
-        $conn->close();
-        return $results;
+    if ($stmt = $conn->prepare('SELECT username, message FROM messages WHERE username = ?')) {
+        $stmt->bind_param('s', $_SESSION["cookie"]);
+        $stmt->execute();
+        ($stmt_result = $stmt->get_result()) or trigger_error($stmt->error, E_USER_ERROR);
+        if ($stmt_result->num_rows > 0) {
+            while ($row_data = $stmt_result->fetch_assoc()) {
+                array_push($results, $row_data);
+            }
+        }
+        $stmt->close();
     }
-    
-    /* Implement add_message_for_user - this function is used in index.php */
-    /* 
+
+    $conn->close();
+    return $results;
+}
+
+/* Implement add_message_for_user - this function is used in index.php */
+/* 
         Function must add the message received as parameter to the database's 'message' table.
         PARAMETERS:
             $username - username for the user submitting the message
@@ -92,16 +102,28 @@
         MUST RETURN:
             Return is irrelevant here
     */
-    function add_message_for_user($username, $message) 
-    {
-        $conn = get_mysqli();
-        $results = array();
-        
-        $conn->close();
+function add_message_for_user($username, $message)
+{
+    $conn = get_mysqli();
+    $results = array();
+
+
+    if ($stmt = $conn->prepare('INSERT INTO messages (username, message) VALUES (?,?)')) {
+        if (strlen($message) > 0) {
+            $stmt->bind_param('ss', $username,  $message);
+            $stmt->execute();
+        }
+
+        $stmt->close();
     }
 
-    /* Implement is_valid_image - this function is used in index.php */
-    /* 
+    $conn->close();
+
+    return $results;
+}
+
+/* Implement is_valid_image - this function is used in index.php */
+/* 
         This function will validate if the file contained at $image_path is indeed an image.
         PARAMETERS:
             $image_path: path towards the file on disk
@@ -109,13 +131,19 @@
             true - file is an image
             false - file is not an image
     */
-    function is_valid_image($image_path) 
-    {
-
+function is_valid_image($image_path)
+{
+    $size = getimagesize($image_path);
+    $fp = fopen($image_path, "rb");
+    if ($size && $fp) {
+        return true;
+    } else {
+        return false;
     }
+}
 
-    /* Implement add_photo_to_user - this function is used in index.php */
-    /* 
+/* Implement add_photo_to_user - this function is used in index.php */
+/* 
         This function must update the 'users' table and set the 'file_userphoto' field with 
         the value given to the $file_userphoto parameter
         PARAMETERS:
@@ -124,15 +152,19 @@
         MUST RETURN:
             Return is irrelevant here
     */
-    function add_photo_path_to_user($username, $file_userphoto) 
-    {
-        $conn = get_mysqli();
-        
-        $conn->close();
+function add_photo_path_to_user($username, $file_userphoto)
+{
+    $conn = get_mysqli();
+    if ($stmt = $conn->prepare('UPDATE users SET file_userphoto = ?	 WHERE username = ?')) {
+        $stmt->bind_param('ss', $file_userphoto,  $username);
+        $stmt->execute();
+        $stmt->close();
     }
+    $conn->close();
+}
 
-    /* Implement get_photo_path_for_user - this function is used in index.php */
-    /* 
+/* Implement get_photo_path_for_user - this function is used in index.php */
+/* 
         This function must obtain from the 'users' table the field named file_userphoto and
         return is as a string. If there is nothing in the database, then return null.
         PARAMETERS:
@@ -141,16 +173,16 @@
             string - string containing the value from the DB, if there is such a value
             null - if there is no value in the DB
     */
-    function get_photo_path_for_user($username) 
-    {
-        $conn = get_mysqli();
-        
-        $conn->close();
-        return $path;
-    }
+function get_photo_path_for_user($username)
+{
+    $conn = get_mysqli();
 
-    /* Implement get_memo_content_for_user - this function is used in index.php */
-    /* 
+    $conn->close();
+    return $path;
+}
+
+/* Implement get_memo_content_for_user - this function is used in index.php */
+/* 
         This function must open the memo file for the current user from it's folder and return its content as a string.
         If the memo does not exist, the function must return the string "No such file!".
         PARAMETERS:
@@ -160,12 +192,11 @@
             string containing the data from the memo file (it's content)
             "No such file!" if there's no such file.
     */
-    function get_memo_content_for_user($username, $memoname) 
-    {
+function get_memo_content_for_user($username, $memoname)
+{
+}
 
-    }
-
-    /* 
+/* 
         Evaluate the impact of 'get_language_php' by explaining what are the risks of this function's default implementation
         (the one you received) by answering the following questions:
             - What is the vulnerability present in this function?
@@ -174,7 +205,7 @@
         After that, modify the get_language_php function to no longer present a security risk.
         This function is used in index.php
     */
-    /*
+/*
         This function must return the path to the language file corresponding to the desired language or null if the file
         does not exist. All language files must be in the language folder or else they are not supported.
         PARAMETERS:
@@ -183,13 +214,11 @@
             path to the en language file (languages/en.php)
             null if the language is not supported
     */
-    function get_language_php($language)
-    {
-        $language_path = "language/" . $language . ".php";
-        if (is_file($language_path))
-        {
-            return $language_path;
-        }
-        return null;
+function get_language_php($language)
+{
+    $language_path = "language/" . $language . ".php";
+    if (is_file($language_path)) {
+        return $language_path;
     }
-?>
+    return null;
+}
