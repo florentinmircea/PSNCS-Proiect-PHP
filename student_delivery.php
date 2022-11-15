@@ -177,7 +177,25 @@ function get_photo_path_for_user($username)
 {
     $conn = get_mysqli();
 
+    $path = null;
+
+    if ($stmt = $conn->prepare('SELECT file_userphoto FROM users WHERE username = ?')) {
+        // Bind parameters s = string
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $stmt->bind_result($file_userphoto);
+            $stmt->fetch();
+            $path = $file_userphoto;
+        }
+
+        $stmt->close();
+    }
     $conn->close();
+
     return $path;
 }
 
@@ -194,6 +212,16 @@ function get_photo_path_for_user($username)
     */
 function get_memo_content_for_user($username, $memoname)
 {
+
+    if (!preg_match('/^[\w.-]+$/', $memoname)) {
+        return "No such file!";
+    }
+
+    $path = "users/" . $username . "/" . $memoname;
+    if (!is_file($path)) {
+        return "No such file!";
+    }
+    return file_get_contents($path);
 }
 
 /* 
@@ -216,6 +244,10 @@ function get_memo_content_for_user($username, $memoname)
     */
 function get_language_php($language)
 {
+
+    if (!preg_match('/^[\w.-]+$/', $language)) {
+        return null;
+    }
     $language_path = "language/" . $language . ".php";
     if (is_file($language_path)) {
         return $language_path;
