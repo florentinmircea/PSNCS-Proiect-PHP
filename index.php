@@ -1,7 +1,7 @@
 <?php
     include_once("utils/dbconfig.php");
     include_once("utils/util.php");
-    include_once("student_delivery.php");
+    include_once("functions.php");
     session_start();
     if (!isset($_SESSION["cookie"]))
     {
