@@ -2,19 +2,14 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-CREATE DATABASE `psncs`;
-
---
--- Database: `psncs`
---
-
--- --------------------------------------------------------
+CREATE DATABASE IF NOT EXISTS `blog`;
+USE `blog`;
 
 --
 -- Table structure for table `messages`
 --
 
-CREATE TABLE `messages` (
+CREATE TABLE IF NOT EXISTS `messages` (
   `username` varchar(256) NOT NULL,
   `message` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -24,7 +19,7 @@ CREATE TABLE `messages` (
 --
 
 INSERT INTO `messages` (`username`, `message`) VALUES
-('victim', 'message_test_1');
+('user1', 'message_test_1');
 
 -- --------------------------------------------------------
 
@@ -32,7 +27,7 @@ INSERT INTO `messages` (`username`, `message`) VALUES
 -- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `username` varchar(256) NOT NULL,
   `password` varchar(32) NOT NULL,
   `file_userphoto` varchar(256) NOT NULL
@@ -43,6 +38,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`username`, `password`, `file_userphoto`) VALUES
-('attacker', '8287458823facb8ff918dbfabcd22ccb', ''),
-('victim', '8287458823facb8ff918dbfabcd22ccb', '');
+('user1', '8287458823facb8ff918dbfabcd22ccb', ''),
+('user2', '8287458823facb8ff918dbfabcd22ccb', '');
+
 COMMIT;

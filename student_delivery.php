@@ -1,24 +1,4 @@
 <?php
-/* 
-    IMPORTANT - PLEASE READ ME
-        This is the ONLY file that I will use to validate your solution's implementation. Please keep in mind that only the changes done to this file
-        will be tested, and if you modify anything in any other files those changes won't be taken in account when I validate your solution.
-        Also, please do not rename the file.
-
-        In a separate file (named answers.txt) answer the following questions for each function you implement:
-            * What vulnerabilities can there be in that function 
-                (take in account the fact that the function may not be vulnerable and explicitly say so if you consider it to be that way)
-            * What specific mitigation you used for each of the vulnerabilities listed above
-        
-        For the function named 'get_language_php' which is already implemented make sure to answer and do all the steps required that are listed
-        above the implementation.
-
-    DELIVERY REQUIREMENTS
-        When delivering your solution, please ensure that you create a .zip archive file (make sure it's zip, not 7z, rar, winzip, etc)
-        with the name "LastnameFirstname.zip" (for example MunteaAndrei.zip or RatiuRazvan.zip) and in the root of the zip file please 
-        add the student_delivery.php file modified by you (keep the name as it is) and answers.txt file where you answered the questions.
-    */
-
 /* Implement query_db_login - this function is used in login.php */
 /* 
         Description - Must query the database to obtain the username that matches the 

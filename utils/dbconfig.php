@@ -2,7 +2,7 @@
     $server = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "psncs";
+    $dbname = "blog";
 
     function get_mysqli() {
         global $server, $username, $password, $dbname;

@@ -21,8 +21,6 @@
             die("Framework error: file '" . $user_folder . "' encountered while trying to create folder named " . $user_folder);
             return;
         }
-        // Beware - this function creates the folder with 0777 permissions (maximum permissions). 
-        // We use it here like this because it's easy but don't do this in a production environment.
         mkdir($user_folder);    
     }
 ?>
